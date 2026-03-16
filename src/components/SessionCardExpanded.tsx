@@ -87,7 +87,7 @@ export function SessionCardExpanded({ session, hideActions, onSavePartner, isSav
           Match
         </Link>
         <Link
-          href="/profile"
+          href={`/profile/${student.id}`}
           className="flex-1 py-2.5 rounded-lg border border-slate-200 bg-white font-medium text-center hover:bg-slate-50 transition-colors"
         >
           View Profile

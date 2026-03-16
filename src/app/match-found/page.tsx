@@ -42,17 +42,19 @@ export default function MatchFoundPage() {
           </h3>
           <SessionCardExpanded session={session} hideActions />
         </div>
+      </main>
 
-        <div className="flex flex-wrap gap-3 mt-6">
+      <div className="mt-auto border-t border-slate-200 bg-white px-4 py-4">
+        <div className="flex flex-wrap gap-3">
           <Link
             href={`/chat?partner=${session.student.id}`}
-            className="flex-1 min-w-[100px] py-3 rounded-lg bg-sky-600 text-white font-semibold text-center hover:bg-sky-700"
+            className="flex-1 min-w-[110px] py-3 rounded-xl bg-sky-600 text-white font-semibold text-center hover:bg-sky-700"
           >
             Accept Match
           </Link>
           <Link
             href="/matching"
-            className="flex-1 min-w-[80px] py-3 rounded-lg border border-slate-200 font-medium text-center hover:bg-slate-50"
+            className="flex-1 min-w-[90px] py-3 rounded-xl border border-slate-200 font-medium text-center hover:bg-slate-50"
           >
             Pass
           </Link>
@@ -60,14 +62,14 @@ export default function MatchFoundPage() {
             type="button"
             onClick={handleSave}
             disabled={isSaved}
-            className={`py-3 px-4 rounded-lg border font-medium ${
+            className={`py-3 px-4 rounded-xl border font-medium ${
               isSaved ? "border-slate-100 bg-slate-50 text-slate-400" : "border-slate-200 hover:bg-slate-50"
             }`}
           >
             {isSaved ? "Saved" : "Save Partner"}
           </button>
         </div>
-      </main>
+      </div>
     </div>
   )
 }

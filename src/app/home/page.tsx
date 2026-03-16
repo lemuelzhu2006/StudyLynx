@@ -25,7 +25,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-[780px]">
-      <TopBar locationChip={store.defaultLocation} />
+      <TopBar locationChip={store.defaultLocation} rightIcons="none" />
 
       <main className="flex-1 overflow-y-auto px-4 pb-24">
         {hasActiveSession && (
@@ -91,15 +91,6 @@ export default function HomePage() {
           ))}
         </div>
       </main>
-
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t border-slate-200 mx-auto max-w-[420px]">
-        <Link
-          href="/new-session"
-          className="block w-full py-4 rounded-xl bg-sky-600 text-white font-semibold text-center hover:bg-sky-700 active:bg-sky-800 transition-colors shadow-lg shadow-sky-600/25 hover:shadow-sky-600/30"
-        >
-          New Session
-        </Link>
-      </div>
     </div>
   )
 }

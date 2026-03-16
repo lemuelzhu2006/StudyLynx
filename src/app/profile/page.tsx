@@ -7,7 +7,6 @@ import { TopBar } from "@/components/TopBar"
 import { ProfileInfoCard } from "@/components/ProfileInfoCard"
 import { InputField } from "@/components/InputField"
 import { DropdownField } from "@/components/DropdownField"
-import { BottomSheet } from "@/components/BottomSheet"
 import { PROGRAMS, ACADEMIC_LEVELS, YEARS } from "@/lib/mock-data"
 import { useAppStore } from "@/context/AppStoreContext"
 
@@ -22,8 +21,6 @@ export default function ProfilePage() {
   const [habits, setHabits] = useState(store.user.habits)
   const [bio, setBio] = useState(store.user.bio)
   const [defaultLocation, setDefaultLocation] = useState(store.user.defaultLocation)
-  const [showProgramSheet, setShowProgramSheet] = useState(false)
-  const [showYearSheet, setShowYearSheet] = useState(false)
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
@@ -56,7 +53,7 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col min-h-[780px]">
-      <TopBar title="My Profile" showBack backHref="/home" />
+      <TopBar title="My Profile" showBack backHref="/home" rightIcons="none" />
 
       <main className="flex-1 overflow-y-auto px-4 pb-32">
         <ProfileInfoCard
@@ -74,30 +71,31 @@ export default function ProfilePage() {
         )}
 
         <div className="space-y-5 mt-6">
-          <div onClick={() => setShowProgramSheet(true)}>
-            <DropdownField
-              label="Program"
-              value={program}
-              placeholder="Select program"
-              onClick={() => setShowProgramSheet(true)}
-            />
-          </div>
+          <DropdownField
+            label="Program"
+            value={program}
+            onChange={setProgram}
+            options={[...PROGRAMS]}
+            placeholder="Select program"
+          />
 
           <div className="flex gap-4">
-            <div className="flex-1" onClick={() => setShowYearSheet(true)}>
+            <div className="flex-1">
               <DropdownField
                 label="Level"
                 value={level}
+                onChange={setLevel}
+                options={[...ACADEMIC_LEVELS]}
                 placeholder="Select"
-                onClick={() => setShowYearSheet(true)}
               />
             </div>
-            <div className="flex-1" onClick={() => setShowYearSheet(true)}>
+            <div className="flex-1">
               <DropdownField
                 label="Year"
                 value={String(year)}
+                onChange={(val) => setYear(Number(val))}
+                options={YEARS.map(String)}
                 placeholder="Select"
-                onClick={() => setShowYearSheet(true)}
               />
             </div>
           </div>
@@ -166,71 +164,6 @@ export default function ProfilePage() {
           Sign out
         </button>
       </main>
-
-      <BottomSheet
-        isOpen={showProgramSheet}
-        onClose={() => setShowProgramSheet(false)}
-        title="Program"
-      >
-        <ul className="p-4 space-y-1">
-          {PROGRAMS.map((p) => (
-            <li key={p}>
-              <button
-                type="button"
-                onClick={() => {
-                  setProgram(p)
-                  setShowProgramSheet(false)
-                }}
-                className="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-50"
-              >
-                {p}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </BottomSheet>
-
-      <BottomSheet
-        isOpen={showYearSheet}
-        onClose={() => setShowYearSheet(false)}
-        title="Academic level & year"
-      >
-        <div className="p-4">
-          <p className="text-sm font-medium text-slate-700 mb-2">Level</p>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {ACADEMIC_LEVELS.map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setLevel(l)}
-                className={`px-3 py-2 rounded-lg ${
-                  level === l ? "bg-sky-100 text-sky-800" : "bg-slate-100"
-                }`}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
-          <p className="text-sm font-medium text-slate-700 mb-2">Year</p>
-          <div className="flex flex-wrap gap-2">
-            {YEARS.map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => {
-                  setYear(y)
-                  setShowYearSheet(false)
-                }}
-                className={`px-3 py-2 rounded-lg ${
-                  year === y ? "bg-sky-100 text-sky-800" : "bg-slate-100"
-                }`}
-              >
-                {y}
-              </button>
-            ))}
-          </div>
-        </div>
-      </BottomSheet>
     </div>
   )
 }

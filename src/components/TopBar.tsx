@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ChevronLeft, Users, User } from "lucide-react"
+import { ChevronLeft, Users, User, Home } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface TopBarProps {
@@ -10,6 +10,7 @@ interface TopBarProps {
   backHref?: string
   locationChip?: string
   rightIcons?: "default" | "minimal" | "none"
+  showHomeButton?: boolean
 }
 
 export function TopBar({
@@ -18,6 +19,7 @@ export function TopBar({
   backHref = "/home",
   locationChip,
   rightIcons = "default",
+  showHomeButton = true,
 }: TopBarProps) {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200/80 px-4 py-3 flex items-center justify-between gap-3">
@@ -44,24 +46,35 @@ export function TopBar({
           <h1 className="text-lg font-semibold text-slate-900 truncate">{title}</h1>
         ) : null}
       </div>
-      {rightIcons !== "none" && rightIcons === "default" && (
-        <div className="flex items-center gap-1 flex-shrink-0">
+      <div className="flex items-center gap-1 flex-shrink-0">
+        {showHomeButton && (
           <Link
-            href="/saved-partners"
+            href="/home"
             className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
-            aria-label="Saved partners"
+            aria-label="Home"
           >
-            <Users className="h-5 w-5 text-slate-600" />
+            <Home className="h-5 w-5 text-slate-600" />
           </Link>
-          <Link
-            href="/profile"
-            className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
-            aria-label="Profile"
-          >
-            <User className="h-5 w-5 text-slate-600" />
-          </Link>
-        </div>
-      )}
+        )}
+        {rightIcons === "default" && (
+          <>
+            <Link
+              href="/saved-partners"
+              className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              aria-label="Saved partners"
+            >
+              <Users className="h-5 w-5 text-slate-600" />
+            </Link>
+            <Link
+              href="/profile"
+              className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              aria-label="Profile"
+            >
+              <User className="h-5 w-5 text-slate-600" />
+            </Link>
+          </>
+        )}
+      </div>
     </header>
   )
 }
