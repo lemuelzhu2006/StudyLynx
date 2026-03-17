@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [displayName, setDisplayName] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const { login, store } = useAppStore()
+  const { login, store, resetStore } = useAppStore()
 
   useEffect(() => {
     if (store.isLoggedIn && store.profileComplete) router.replace("/home")
@@ -105,10 +105,15 @@ export default function LoginPage() {
     router.push("/home")
   }
 
+  const handleResetDemo = () => {
+    resetStore()
+    router.replace("/login")
+  }
+
   return (
     <div className="flex flex-col h-full px-6 py-8">
       <div className="flex-1 overflow-y-auto">
-        <h1 className="text-2xl font-bold text-slate-900 mt-4">Study Buddy</h1>
+        <h1 className="text-2xl font-bold text-slate-900 mt-4">StudyLynx</h1>
         <p className="text-slate-600 mt-2 text-sm max-w-xs">
           Find compatible study partners by course, goals, and study style.
         </p>
@@ -187,6 +192,13 @@ export default function LoginPage() {
           className="w-full py-3 rounded-lg border border-slate-200 font-medium hover:bg-slate-50 transition-colors"
         >
           University SSO
+        </button>
+        <button
+          type="button"
+          onClick={handleResetDemo}
+          className="w-full py-2 text-xs text-slate-500 hover:text-slate-700"
+        >
+          Reset demo data on this device
         </button>
       </div>
     </div>

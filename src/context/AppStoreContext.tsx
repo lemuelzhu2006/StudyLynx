@@ -51,6 +51,7 @@ const AppStoreContext = createContext<{
   isPartnerSaved: (id: string) => boolean
   getChatMessages: (partnerId: string) => ChatMessage[]
   addChatMessage: (partnerId: string, message: ChatMessage) => void
+  resetStore: () => void
 } | null>(null)
 
 export function AppStoreProvider({ children }: { children: ReactNode }) {
@@ -190,11 +191,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
   )
 
   const getChatMessages = useCallback(
-    (partnerId: string): ChatMessage[] =>
-      store.chatMessages[partnerId] ?? [
-        { text: "Hi — want to study together for CSC343?", fromMe: false },
-        { text: "Sure! I'm preparing for the midterm.", fromMe: true },
-      ],
+    (partnerId: string): ChatMessage[] => store.chatMessages[partnerId] ?? [],
     [store.chatMessages]
   )
 
@@ -206,6 +203,11 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
         [partnerId]: [...(s.chatMessages[partnerId] ?? []), message],
       },
     }))
+  }, [])
+
+  const resetStore = useCallback(() => {
+    setStore(defaultStore)
+    saveStore(defaultStore)
   }, [])
 
   const value = {
@@ -224,6 +226,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     isPartnerSaved,
     getChatMessages,
     addChatMessage,
+    resetStore,
   }
 
   return (
