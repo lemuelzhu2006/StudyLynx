@@ -1,13 +1,14 @@
 "use client"
 
+import { Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { TopBar } from "@/components/TopBar"
 import { SessionSummaryBar } from "@/components/SessionSummaryBar"
 import { ChatComposer } from "@/components/ChatComposer"
-import { chatPrompts, STUDY_STYLES } from "@/lib/mock-data"
+import { chatPrompts, getStudentById, STUDY_STYLES } from "@/lib/mock-data"
 import { useAppStore } from "@/context/AppStoreContext"
-import { recommendedSessions } from "@/lib/mock-data"
 
 const TABS = [
   { id: "opening", label: "Opening" },
@@ -19,7 +20,7 @@ const TABS = [
 
 const DEFAULT_CHAT_PARTNER = "1"
 
-export default function ChatPage() {
+function ChatContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tabParam = searchParams.get("tab") as string | null
@@ -30,6 +31,16 @@ export default function ChatPage() {
   const { store, getChatMessages, addChatMessage } = useAppStore()
   const [messages, setMessages] = useState<{ text: string; fromMe: boolean }[]>([])
 
+  const partner = getStudentById(partnerId)
+  const match = store.matchedPartner
+  const isMatchWithPartner = match?.student.id === partnerId
+
+  const location = isMatchWithPartner ? match.session.location : partner?.defaultLocation ?? "Robarts Library"
+  const course = store.activeSession?.subject ?? match?.session.course ?? (partner?.courses[0] ?? "CSC343")
+  const studyStyleId = isMatchWithPartner ? match.session.studyStyle : "quiet-study"
+  const studyStyleLabel = STUDY_STYLES.find((s) => s.id === studyStyleId)?.label ?? "Quiet study"
+  const goal = isMatchWithPartner ? match.session.goal : "Prepare for midterm"
+
   useEffect(() => {
     setMessages(getChatMessages(partnerId))
   }, [partnerId, getChatMessages])
@@ -37,11 +48,6 @@ export default function ChatPage() {
   useEffect(() => {
     setActiveTabId(activeTab)
   }, [activeTab])
-
-  const session = recommendedSessions[0]
-  const course = store.activeSession?.subject ?? session.course
-  const studyStyleLabel =
-    STUDY_STYLES.find((s) => s.id === session.studyStyle)?.label ?? "Quiet study"
 
   const rawPrompts =
     chatPrompts[activeTabId as keyof typeof chatPrompts] ?? chatPrompts.opening
@@ -54,14 +60,33 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col h-[780px]">
+    <div className="flex flex-col h-full">
       <TopBar title="Study chat" showBack backHref="/home" rightIcons="minimal" />
 
+      {partner && (
+        <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 border-b border-slate-200">
+          <Link
+            href={`/profile/${partner.id}`}
+            className="flex items-center gap-3 flex-1 min-w-0 hover:bg-slate-100 rounded-lg p-1 -m-1 transition-colors"
+          >
+            <div className="w-9 h-9 rounded-full bg-sky-100 flex items-center justify-center text-sm font-semibold text-sky-700 flex-shrink-0">
+              {partner.avatar}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-slate-800 truncate">{partner.name}</p>
+              <p className="text-xs text-slate-500 truncate">
+                Chatting about {course}
+              </p>
+            </div>
+          </Link>
+        </div>
+      )}
+
       <SessionSummaryBar
-        location={session.location}
+        location={location}
         course={course}
         studyStyle={studyStyleLabel}
-        goal={session.goal}
+        goal={goal}
       />
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
@@ -110,5 +135,13 @@ export default function ChatPage() {
         />
       </div>
     </div>
+  )
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div className="flex h-full items-center justify-center"><p className="text-slate-500">Loading...</p></div>}>
+      <ChatContent />
+    </Suspense>
   )
 }

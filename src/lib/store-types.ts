@@ -1,10 +1,11 @@
-import type { SavedPartner } from "./mock-data"
+import type { SavedPartner, Session, Student } from "./mock-data"
 
 export interface UserProfile {
   name: string
   avatar: string
   email: string
-  program: string
+  subject: string
+  programType: string
   level: string
   year: number
   courses: string
@@ -12,6 +13,7 @@ export interface UserProfile {
   habits: string
   bio: string
   defaultLocation: string
+  studentId?: string
 }
 
 export interface ActiveSession {
@@ -32,24 +34,27 @@ export interface ChatMessage {
 export interface AppStore {
   isLoggedIn: boolean
   user: UserProfile
+  profileComplete: boolean
   defaultLocation: string
   recentLocations: string[]
   shareLiveLocation: boolean
   activeSession: ActiveSession | null
+  matchedPartner: { student: Student; session: Session } | null
   savedPartners: SavedPartner[]
   chatMessages: Record<string, ChatMessage[]>
 }
 
 export const DEFAULT_USER: UserProfile = {
-  name: "You",
-  avatar: "Y",
+  name: "",
+  avatar: "?",
   email: "",
-  program: "CS Specialist",
+  subject: "",
+  programType: "",
   level: "Undergraduate",
   year: 1,
-  courses: "CSC343, CSC165",
+  courses: "",
   preferredTime: "1:30 PM – 4:45 PM",
-  habits: "Quiet study, prefer 1.5–2 hr sessions",
+  habits: "",
   bio: "",
   defaultLocation: "Robarts Library",
 }

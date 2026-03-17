@@ -23,19 +23,17 @@ export function BottomSheet({
   return (
     <>
       <div
-        className="absolute inset-0 bg-black/40 z-40 transition-opacity duration-200"
+        className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
       <div
         className={cn(
-          "absolute bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] max-h-[85vh] overflow-hidden flex flex-col transform transition-transform duration-300 ease-out",
+          "fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[70vh] overflow-hidden flex flex-col",
+          "mx-auto max-w-[420px]",
           className
         )}
       >
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="w-12 h-1.5 rounded-full bg-slate-200" />
-        </div>
         {title && (
           <div className="flex items-center justify-between p-4 border-b border-slate-200">
             <h3 className="font-semibold text-slate-900">{title}</h3>

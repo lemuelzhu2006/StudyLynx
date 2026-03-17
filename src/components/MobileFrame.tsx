@@ -1,7 +1,6 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { BottomNav } from "@/components/BottomNav"
 
 interface MobileFrameProps {
   children: React.ReactNode
@@ -13,12 +12,13 @@ export function MobileFrame({ children, className }: MobileFrameProps) {
     <div className="min-h-screen bg-slate-200 flex items-center justify-center p-4 md:p-8">
       <div
         className={cn(
-          "w-full max-w-[420px] h-[780px] max-h-[90vh] rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-slate-300 bg-white relative translate-x-0 translate-y-0",
+          "w-full max-w-[420px] h-[780px] max-h-[90vh] rounded-[2.5rem] overflow-hidden shadow-xl border-4 border-slate-300 bg-white flex flex-col",
           className
         )}
       >
-        <div className="h-full overflow-y-auto overflow-x-hidden">{children}</div>
-        <BottomNav />
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+          {children}
+        </div>
       </div>
     </div>
   )

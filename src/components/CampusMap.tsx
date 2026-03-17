@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useAppStore } from "@/context/AppStoreContext"
+import type { Session } from "@/lib/mock-data"
 import { LOCATION_COORDS } from "@/lib/mock-data"
-import { recommendedSessions } from "@/lib/mock-data"
 import { cn } from "@/lib/utils"
 
 const LEAFLET_SCRIPT = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -49,9 +49,10 @@ declare global {
 interface CampusMapProps {
   className?: string
   height?: string
+  sessions?: Session[]
 }
 
-export function CampusMap({ className, height = "140px" }: CampusMapProps) {
+export function CampusMap({ className, height = "140px", sessions = [] }: CampusMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
   const [error, setError] = useState(false)
@@ -107,7 +108,7 @@ export function CampusMap({ className, height = "140px" }: CampusMapProps) {
             })
         }
         const addedLocs = new Set<string>()
-        recommendedSessions.forEach((session) => {
+        sessions.forEach((session) => {
           const coord = LOCATION_COORDS[session.location]
           if (coord && !addedLocs.has(session.location)) {
             addedLocs.add(session.location)
@@ -131,7 +132,7 @@ export function CampusMap({ className, height = "140px" }: CampusMapProps) {
         mapRef.current = null
       }
     }
-  }, [mounted, store.defaultLocation, error])
+  }, [mounted, store.defaultLocation, error, sessions])
 
   if (!mounted) {
     return (
@@ -164,7 +165,7 @@ export function CampusMap({ className, height = "140px" }: CampusMapProps) {
   return (
     <div
       ref={containerRef}
-      className={cn("rounded-xl overflow-hidden border border-slate-200 bg-slate-100 relative z-0", className)}
+      className={cn("rounded-xl overflow-hidden border border-slate-200 bg-slate-100", className)}
       style={{ height }}
     />
   )

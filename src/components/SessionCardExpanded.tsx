@@ -43,7 +43,7 @@ export function SessionCardExpanded({ session, hideActions, onSavePartner, isSav
               )}
             </div>
             <p className="text-sm text-slate-600">
-              Verified undergraduate · {student.program} · Year {student.year}
+              {student.verified ? "Verified " : ""}undergraduate · {student.subject} {student.programType} · Year {student.year}
             </p>
           </div>
         </div>
@@ -81,7 +81,7 @@ export function SessionCardExpanded({ session, hideActions, onSavePartner, isSav
       {!hideActions && (
       <div className="flex gap-2 p-3 bg-slate-50 border-t border-slate-100">
         <Link
-          href="/match-found"
+          href={`/matching?from=${session.id}`}
           className="flex-1 py-2.5 rounded-lg bg-sky-600 text-white font-medium text-center hover:bg-sky-700 transition-colors"
         >
           Match

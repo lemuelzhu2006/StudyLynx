@@ -25,10 +25,12 @@ import { savedPartners as initialSavedPartners } from "@/lib/mock-data"
 const defaultStore: AppStore = {
   isLoggedIn: false,
   user: DEFAULT_USER,
+  profileComplete: false,
   defaultLocation: "Robarts Library",
   recentLocations: ["Robarts Library", "Bahen Centre for Information Technology", "Kelly Library"],
   shareLiveLocation: false,
   activeSession: null,
+  matchedPartner: null,
   savedPartners: initialSavedPartners,
   chatMessages: {},
 }
@@ -38,11 +40,12 @@ const AppStoreContext = createContext<{
   setDefaultLocation: (loc: string) => void
   addRecentLocation: (loc: string) => void
   setShareLiveLocation: (v: boolean) => void
-  login: (profile: Partial<UserProfile>) => void
+  login: (profile: Partial<UserProfile> & { profileComplete?: boolean }) => void
   logout: () => void
   updateProfile: (profile: Partial<UserProfile>) => void
   createActiveSession: (session: Omit<ActiveSession, "id" | "status">) => void
   clearActiveSession: () => void
+  setMatchedPartner: (partner: { student: import("@/lib/mock-data").Student; session: import("@/lib/mock-data").Session } | null) => void
   addSavedPartner: (partner: SavedPartner) => void
   removeSavedPartner: (id: string) => void
   isPartnerSaved: (id: string) => boolean
@@ -56,10 +59,18 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const loaded = loadStore()
+    const loadedUser = loaded.user as (Partial<UserProfile> & { program?: string }) | undefined
+    const mergedUser = { ...DEFAULT_USER, ...loadedUser }
+    if (loadedUser?.program && !loadedUser.subject) {
+      const [subject, programType] = (loadedUser.program as string).split(" ")
+      mergedUser.subject = subject || "CS"
+      mergedUser.programType = programType || "Major"
+    }
     setStore((prev) => ({
       ...prev,
       ...loaded,
-      user: { ...DEFAULT_USER, ...loaded.user },
+      user: mergedUser,
+      profileComplete: loaded.profileComplete ?? !!loadedUser?.courses,
       savedPartners: loaded.savedPartners ?? prev.savedPartners,
     }))
     setHydrated(true)
@@ -95,19 +106,26 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     setStore((s) => ({ ...s, shareLiveLocation: v }))
   }, [])
 
-  const login = useCallback((profile: Partial<UserProfile>) => {
+  const login = useCallback((profile: Partial<UserProfile> & { profileComplete?: boolean }) => {
     const name = profile.name || profile.email?.split("@")[0] || "You"
-    const avatar = name.slice(0, 2).toUpperCase()
-    setStore((s) => ({
-      ...s,
-      isLoggedIn: true,
-      user: {
-        ...s.user,
-        ...profile,
-        name: profile.name || name,
-        avatar: profile.avatar || avatar,
-      },
-    }))
+    const avatar = (profile.avatar || name.slice(0, 2)).toUpperCase()
+    setStore((s) => {
+      const next = {
+        ...s,
+        isLoggedIn: true,
+        profileComplete: profile.profileComplete ?? s.profileComplete,
+        user: {
+          ...s.user,
+          ...profile,
+          name: profile.name || name,
+          avatar: profile.avatar || avatar,
+        },
+      }
+      if (profile.defaultLocation !== undefined) {
+        next.defaultLocation = profile.defaultLocation
+      }
+      return next
+    })
   }, [])
 
   const logout = useCallback(() => {
@@ -116,7 +134,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
 
   const updateProfile = useCallback((profile: Partial<UserProfile>) => {
     setStore((s) => {
-      const next = { ...s, user: { ...s.user, ...profile } }
+      const next = { ...s, user: { ...s.user, ...profile }, profileComplete: true }
       if (profile.defaultLocation !== undefined) {
         next.defaultLocation = profile.defaultLocation
       }
@@ -141,6 +159,13 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
   const clearActiveSession = useCallback(() => {
     setStore((s) => ({ ...s, activeSession: null }))
   }, [])
+
+  const setMatchedPartner = useCallback(
+    (partner: { student: import("@/lib/mock-data").Student; session: import("@/lib/mock-data").Session } | null) => {
+      setStore((s) => ({ ...s, matchedPartner: partner }))
+    },
+    []
+  )
 
   const addSavedPartner = useCallback((partner: SavedPartner) => {
     setStore((s) => {
@@ -193,6 +218,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     updateProfile,
     createActiveSession,
     clearActiveSession,
+    setMatchedPartner,
     addSavedPartner,
     removeSavedPartner,
     isPartnerSaved,

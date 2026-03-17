@@ -11,7 +11,7 @@ export default function SavedPartnersPage() {
 
   return (
     <div className="flex flex-col min-h-[780px]">
-      <TopBar title="Saved Partners" showBack backHref="/home" rightIcons="none" />
+      <TopBar title="Saved Partners" showBack backHref="/home" />
 
       <main className="flex-1 overflow-y-auto px-4 pb-8">
         <p className="text-sm text-slate-600 mt-4 mb-6">
