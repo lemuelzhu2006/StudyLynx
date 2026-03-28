@@ -14,7 +14,7 @@ export default function OtherProfilePage() {
 
   if (!student) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col min-h-[780px]">
         <TopBar title="Profile" showBack backHref="/home" />
         <main className="flex-1 flex items-center justify-center p-6">
           <p className="text-slate-600">User not found</p>
@@ -29,10 +29,10 @@ export default function OtherProfilePage() {
   const programDisplay = `${student.subject} ${student.programType}`
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-[780px]">
       <TopBar title="Profile" showBack backHref="/home" />
 
-      <main className="flex-1 overflow-y-auto px-4 pb-8">
+      <main className="flex-1 overflow-y-auto px-4 pb-24">
         <ProfileInfoCard
           name={student.name}
           avatar={student.avatar}
@@ -69,13 +69,13 @@ export default function OtherProfilePage() {
         <div className="flex gap-3 mt-8">
           <Link
             href={`/chat?partner=${student.id}`}
-            className="flex-1 py-3 rounded-lg bg-sky-600 text-white font-semibold text-center hover:bg-sky-700"
+            className="flex-1 py-3 rounded-xl bg-sky-600 text-white font-semibold text-center hover:bg-sky-700"
           >
             Message
           </Link>
           <Link
             href="/home"
-            className="flex-1 py-3 rounded-lg border border-slate-200 font-medium text-center hover:bg-slate-50"
+            className="flex-1 py-3 rounded-xl border border-slate-200 font-medium text-center hover:bg-slate-50"
           >
             Back
           </Link>

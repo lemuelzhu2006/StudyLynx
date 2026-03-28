@@ -13,7 +13,7 @@ export default function SavedPartnersPage() {
     <div className="flex flex-col min-h-[780px]">
       <TopBar title="Saved Partners" showBack backHref="/home" />
 
-      <main className="flex-1 overflow-y-auto px-4 pb-8">
+      <main className="flex-1 overflow-y-auto px-4 pb-24">
         <p className="text-sm text-slate-600 mt-4 mb-6">
           Partners you&apos;ve studied with before. Invite them again for a session.
         </p>

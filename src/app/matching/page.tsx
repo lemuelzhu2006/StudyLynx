@@ -57,7 +57,7 @@ function MatchingContent() {
   }, [fromSessionId, store.activeSession, router, setMatchedPartner])
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-[780px]">
       <TopBar showBack backHref="/home" rightIcons="none" />
 
       <main className="flex-1 flex flex-col items-center justify-center px-6">

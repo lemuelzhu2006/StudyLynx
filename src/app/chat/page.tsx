@@ -60,7 +60,7 @@ function ChatContent() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[780px]">
       <TopBar title="Study chat" showBack backHref="/home" rightIcons="minimal" />
 
       {partner && (

@@ -66,7 +66,7 @@ function ProfileContent() {
     : `${subject} ${programType} · Year ${year}`
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-[780px]">
       <TopBar
         title={isNewUser ? "Complete your profile" : "My Profile"}
         showBack

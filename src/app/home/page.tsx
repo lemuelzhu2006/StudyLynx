@@ -32,10 +32,10 @@ function HomeContent() {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <TopBar locationChip={store.defaultLocation} />
+    <div className="flex flex-col min-h-[780px]">
+      <TopBar locationChip={store.defaultLocation} rightIcons="none" />
 
-      <main className="flex-1 min-h-0 overflow-y-auto px-4 pb-4">
+      <main className="flex-1 overflow-y-auto px-4 pb-24">
         {hasActiveSession && (
           <ActiveSessionBar
             location={store.activeSession?.location ?? "Robarts Library"}
@@ -67,7 +67,7 @@ function HomeContent() {
               </div>
               <Link
                 href={`/chat?partner=${store.matchedPartner.student.id}`}
-                className="ml-auto py-2 px-4 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700"
+                className="ml-auto py-2 px-4 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700"
               >
                 Chat
               </Link>
@@ -126,15 +126,6 @@ function HomeContent() {
           )}
         </div>
       </main>
-
-      <div className="flex-shrink-0 p-4 bg-white/95 backdrop-blur-sm border-t border-slate-200">
-        <Link
-          href="/new-session"
-          className="block w-full py-4 rounded-xl bg-sky-600 text-white font-semibold text-center hover:bg-sky-700 active:bg-sky-800 transition-colors shadow-lg shadow-sky-600/25"
-        >
-          New Session
-        </Link>
-      </div>
     </div>
   )
 }

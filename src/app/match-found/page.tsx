@@ -40,7 +40,7 @@ export default function MatchFoundPage() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col min-h-[780px]">
       <TopBar title="Match Found" showBack backHref="/home" rightIcons="minimal" />
 
       <main className="flex-1 overflow-y-auto px-4 pb-8">
@@ -58,18 +58,20 @@ export default function MatchFoundPage() {
           </h3>
           <SessionCardExpanded session={session} hideActions />
         </div>
+      </main>
 
-        <div className="flex flex-wrap gap-3 mt-6">
+      <div className="mt-auto border-t border-slate-200 bg-white px-4 py-4">
+        <div className="flex flex-wrap gap-3">
           <Link
             href={`/chat?partner=${student.id}`}
-            className="flex-1 min-w-[100px] py-3 rounded-lg bg-sky-600 text-white font-semibold text-center hover:bg-sky-700"
+            className="flex-1 min-w-[110px] py-3 rounded-xl bg-sky-600 text-white font-semibold text-center hover:bg-sky-700"
           >
             Accept Match
           </Link>
           <button
             type="button"
             onClick={handlePass}
-            className="flex-1 min-w-[80px] py-3 rounded-lg border border-slate-200 font-medium hover:bg-slate-50"
+            className="flex-1 min-w-[90px] py-3 rounded-xl border border-slate-200 font-medium text-center hover:bg-slate-50"
           >
             Pass
           </button>
@@ -77,14 +79,14 @@ export default function MatchFoundPage() {
             type="button"
             onClick={handleSave}
             disabled={isSaved}
-            className={`py-3 px-4 rounded-lg border font-medium ${
+            className={`py-3 px-4 rounded-xl border font-medium ${
               isSaved ? "border-slate-100 bg-slate-50 text-slate-400" : "border-slate-200 hover:bg-slate-50"
             }`}
           >
             {isSaved ? "Saved" : "Save Partner"}
           </button>
         </div>
-      </main>
+      </div>
     </div>
   )
 }
