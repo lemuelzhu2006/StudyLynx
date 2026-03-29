@@ -1,7 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import { MessageCircle, User } from "lucide-react"
 import { SavedPartner } from "@/lib/mock-data"
+import { Avatar } from "./Avatar"
 import { BadgeCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -20,9 +22,7 @@ export function SavedPartnerCard({ partner, onRemove, className }: SavedPartnerC
       )}
     >
       <div className="flex gap-3">
-        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600">
-          {partner.avatar}
-        </div>
+        <Avatar src={partner.avatar} size="md" className="bg-slate-200 text-slate-600" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <span className="font-medium text-slate-900">{partner.name}</span>
@@ -36,24 +36,24 @@ export function SavedPartnerCard({ partner, onRemove, className }: SavedPartnerC
           <p className="text-xs text-slate-500 mt-1">{partner.fitSummary}</p>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-100">
+      <div className="flex gap-2 mt-3 pt-3 border-t border-slate-100">
         <Link
           href={`/chat?partner=${partner.id}`}
-          className="flex-1 min-w-[100px] py-2 rounded-lg bg-sky-600 text-white text-sm font-medium text-center hover:bg-sky-700 transition-colors"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-sky-50 text-sky-700 text-xs font-medium hover:bg-sky-100 transition-colors"
         >
-          Invite Again
+          <MessageCircle className="h-3.5 w-3.5" /> Chat
         </Link>
         <Link
-          href={`/chat?partner=${partner.id}`}
-          className="flex-1 min-w-[80px] py-2 rounded-lg border border-slate-200 text-sm font-medium text-center hover:bg-slate-50 transition-colors"
+          href={`/profile/${partner.id}`}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-slate-200 text-xs font-medium hover:bg-slate-50 transition-colors"
         >
-          Message
+          <User className="h-3.5 w-3.5" /> View Profile
         </Link>
         {onRemove && (
           <button
             type="button"
             onClick={() => onRemove(partner.id)}
-            className="py-2 px-3 rounded-lg border border-slate-200 text-sm font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+            className="flex items-center justify-center px-3 py-2.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-500 hover:bg-slate-50 transition-colors"
           >
             Remove
           </button>

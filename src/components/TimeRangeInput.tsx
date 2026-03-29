@@ -24,13 +24,24 @@ export function TimeRangeInput({
   const [endTime, setEndTime] = useState("")
 
   useEffect(() => {
-    if (value && (value.includes("–") || value.includes("-"))) {
-      const parts = value.split(/–|-/).map(p => p.trim())
-      if (parts.length === 2) {
-        // leave for user to set fresh if format doesn't match HH:mm
+    if (!value) return
+    const parts = value.split(/–|-/).map(p => p.trim())
+    if (parts.length === 2) {
+      const toHHMM = (s: string) => {
+        const m = s.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i)
+        if (!m) return ""
+        let h = parseInt(m[1], 10)
+        const min = m[2]
+        if (m[3]?.toUpperCase() === "PM" && h < 12) h += 12
+        if (m[3]?.toUpperCase() === "AM" && h === 12) h = 0
+        return `${String(h).padStart(2, "0")}:${min}`
       }
+      const s = toHHMM(parts[0])
+      const e = toHHMM(parts[1])
+      if (s) setStartTime(s)
+      if (e) setEndTime(e)
     }
-  }, [])
+  }, [value])
 
   const handleTimeChange = (start: string, end: string) => {
     setStartTime(start)

@@ -4,14 +4,14 @@ import { Suspense, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { TopBar } from "@/components/TopBar"
 import { Loader2 } from "lucide-react"
-import { getMatchingSessions, getSessionById, STUDY_STYLES } from "@/lib/mock-data"
+import { getMatchingSessions, getSessionById as getMockSession, STUDY_STYLES } from "@/lib/mock-data"
 import { useAppStore } from "@/context/AppStoreContext"
 
 function MatchingContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { store, setMatchedPartner } = useAppStore()
-  const fromSessionId = searchParams.get("from")
+  const { store, setMatchedPartner, updateSessionStatus, getSessionById } = useAppStore()
+  const sessionId = searchParams.get("sessionId") || searchParams.get("from")
 
   useEffect(() => {
     const runMatching = () => {
@@ -19,46 +19,60 @@ function MatchingContent() {
       let location: string
       let studyStyle: string
       let goal: string
+      let date: string | undefined
 
-      if (fromSessionId) {
-        const session = getSessionById(fromSessionId)
-        if (!session) {
-          router.replace("/home")
-          return
+      if (sessionId) {
+        const userSession = getSessionById(sessionId)
+        if (userSession) {
+          course = userSession.subject
+          location = userSession.location
+          studyStyle = userSession.studyStyle
+          goal = userSession.goals || ""
+          date = userSession.date
+        } else {
+          const mockSes = getMockSession(sessionId)
+          if (!mockSes) { router.replace("/home"); return }
+          course = mockSes.course
+          location = mockSes.location
+          studyStyle = STUDY_STYLES.find((s) => s.id === mockSes.studyStyle)?.label ?? "Quiet study"
+          goal = mockSes.goal
+          date = mockSes.date
         }
-        course = session.course
-        location = session.location
-        studyStyle = STUDY_STYLES.find((s) => s.id === session.studyStyle)?.label ?? "Quiet study"
-        goal = session.goal
       } else {
-        const active = store.activeSession
-        if (!active) {
-          router.replace("/home")
-          return
-        }
-        course = active.subject
-        location = active.location
-        studyStyle = active.rules || "Quiet study"
-        goal = active.goals || ""
+        router.replace("/home")
+        return
       }
 
-      const matches = getMatchingSessions(course, location, studyStyle, goal)
+      const matches = getMatchingSessions(course, location, studyStyle, goal, date)
       const picked = matches[0]
       if (picked) {
         setMatchedPartner({ student: picked.student, session: picked })
-        router.replace("/match-found")
+        if (sessionId) {
+          updateSessionStatus(sessionId, "matched", { studentId: picked.student.id, sessionId: picked.id })
+        }
+        router.replace(`/match-found?sessionId=${sessionId}`)
       } else {
-        router.replace("/home")
+        const allDateMatches = getMatchingSessions(course, location, studyStyle, goal)
+        const fallback = allDateMatches[0]
+        if (fallback) {
+          setMatchedPartner({ student: fallback.student, session: fallback })
+          if (sessionId) {
+            updateSessionStatus(sessionId, "matched", { studentId: fallback.student.id, sessionId: fallback.id })
+          }
+          router.replace(`/match-found?sessionId=${sessionId}`)
+        } else {
+          router.replace("/home?no-match=1")
+        }
       }
     }
 
     const t = setTimeout(runMatching, 1500)
     return () => clearTimeout(t)
-  }, [fromSessionId, store.activeSession, router, setMatchedPartner])
+  }, [sessionId, router, setMatchedPartner, updateSessionStatus, getSessionById])
 
   return (
     <div className="flex flex-col min-h-[780px]">
-      <TopBar showBack backHref="/home" rightIcons="none" />
+      <TopBar showBack backHref="/home" />
 
       <main className="flex-1 flex flex-col items-center justify-center px-6">
         <Loader2 className="h-12 w-12 text-sky-500 animate-spin mb-6" />

@@ -1,22 +1,25 @@
 "use client"
 
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import Link from "next/link"
+import { UserPlus, UserCheck, MessageCircle } from "lucide-react"
 import { TopBar } from "@/components/TopBar"
 import { ProfileInfoCard } from "@/components/ProfileInfoCard"
 import { getStudentById } from "@/lib/mock-data"
+import { useAppStore } from "@/context/AppStoreContext"
 
 export default function OtherProfilePage() {
   const params = useParams()
-  const router = useRouter()
   const userId = params.userId as string
   const student = getStudentById(userId)
+  const { addSavedPartner, isPartnerSaved } = useAppStore()
+  const saved = student ? isPartnerSaved(student.id) : false
 
   if (!student) {
     return (
       <div className="flex flex-col min-h-[780px]">
         <TopBar title="Profile" showBack backHref="/home" />
-        <main className="flex-1 flex items-center justify-center p-6">
+        <main className="flex-1 flex flex-col items-center justify-center p-6">
           <p className="text-slate-600">User not found</p>
           <Link href="/home" className="mt-4 text-sky-600 font-medium">
             Back to home
@@ -69,16 +72,28 @@ export default function OtherProfilePage() {
         <div className="flex gap-3 mt-8">
           <Link
             href={`/chat?partner=${student.id}`}
-            className="flex-1 py-3 rounded-xl bg-sky-600 text-white font-semibold text-center hover:bg-sky-700"
+            className="flex-1 py-3 rounded-xl bg-sky-600 text-white font-semibold text-center hover:bg-sky-700 flex items-center justify-center gap-1.5"
           >
-            Message
+            <MessageCircle className="h-4 w-4" /> Chat
           </Link>
-          <Link
-            href="/home"
-            className="flex-1 py-3 rounded-xl border border-slate-200 font-medium text-center hover:bg-slate-50"
+          <button
+            type="button"
+            onClick={() =>
+              addSavedPartner({
+                ...student,
+                sharedCourses: student.courses,
+                fitSummary: `${student.subject} ${student.programType} · Year ${student.year}`,
+              })
+            }
+            disabled={saved}
+            className={`flex-1 py-3 rounded-xl border font-semibold flex items-center justify-center gap-1.5 ${
+              saved
+                ? "border-slate-100 bg-slate-50 text-slate-400 cursor-default"
+                : "border-slate-200 hover:bg-slate-50"
+            }`}
           >
-            Back
-          </Link>
+            {saved ? <><UserCheck className="h-4 w-4" /> Saved</> : <><UserPlus className="h-4 w-4" /> Save Partner</>}
+          </button>
         </div>
       </main>
     </div>

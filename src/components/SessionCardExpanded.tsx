@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
 import Link from "next/link"
-import { Session, STUDY_STYLES } from "@/lib/mock-data"
+import { Session, STUDY_STYLES, formatSessionDate } from "@/lib/mock-data"
 import type { SavedPartner } from "@/lib/mock-data"
 import { RecommendationReasonChips } from "./RecommendationReasonChips"
+import { Avatar } from "./Avatar"
 import { BadgeCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -32,9 +32,7 @@ export function SessionCardExpanded({ session, hideActions, onSavePartner, isSav
     >
       <div className="p-4">
         <div className="flex gap-3 mb-3">
-          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-base font-semibold text-slate-600 ring-2 ring-white shadow-inner">
-            {student.avatar}
-          </div>
+          <Avatar src={student.avatar} size="xl" className="bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 ring-2 ring-white shadow-inner" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-slate-900">{student.name}</span>
@@ -48,6 +46,12 @@ export function SessionCardExpanded({ session, hideActions, onSavePartner, isSav
           </div>
         </div>
         <div className="space-y-2 text-sm">
+          {session.date && (
+            <p>
+              <span className="font-medium text-slate-700">Date:</span>{" "}
+              <span className="text-slate-600">{formatSessionDate(session.date)}</span>
+            </p>
+          )}
           <p>
             <span className="font-medium text-slate-700">Location:</span>{" "}
             <span className="text-slate-600">{location}</span>
@@ -108,7 +112,7 @@ export function SessionCardExpanded({ session, hideActions, onSavePartner, isSav
               : "border-slate-200 bg-white hover:bg-slate-50"
           }`}
         >
-          {isSaved ? "Saved" : "Save for Later"}
+          {isSaved ? "Saved" : "Save"}
         </button>
       </div>
       )}

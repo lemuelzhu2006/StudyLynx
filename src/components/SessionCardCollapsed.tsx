@@ -1,7 +1,8 @@
 "use client"
 
-import { Session } from "@/lib/mock-data"
+import { Session, formatSessionDate } from "@/lib/mock-data"
 import { RecommendationReasonChips } from "./RecommendationReasonChips"
+import { Avatar } from "./Avatar"
 import { BadgeCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -31,9 +32,7 @@ export function SessionCardCollapsed({
       )}
     >
       <div className="flex gap-3">
-        <div className="flex-shrink-0 w-11 h-11 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600 ring-2 ring-white shadow-inner">
-          {student.avatar}
-        </div>
+        <Avatar src={student.avatar} size="lg" className="bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 ring-2 ring-white shadow-inner" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <span className="font-medium text-slate-900 truncate">{student.name}</span>
@@ -42,7 +41,7 @@ export function SessionCardCollapsed({
             )}
           </div>
           <p className="text-sm text-slate-600 truncate">
-            {location} · {course}
+            {session.date && <>{formatSessionDate(session.date)} · </>}{location} · {course}
           </p>
           <p className="text-xs text-slate-500 mt-1 truncate">{goal}</p>
           {recommendationReasons.length > 0 && (

@@ -1,10 +1,10 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
 import Link from "next/link"
 import { TopBar } from "@/components/TopBar"
+import { Avatar } from "@/components/Avatar"
 import { SessionSummaryBar } from "@/components/SessionSummaryBar"
 import { ChatComposer } from "@/components/ChatComposer"
 import { chatPrompts, getStudentById, STUDY_STYLES } from "@/lib/mock-data"
@@ -32,11 +32,17 @@ function ChatContent() {
   const [messages, setMessages] = useState<{ text: string; fromMe: boolean }[]>([])
 
   const partner = getStudentById(partnerId)
+
+  useEffect(() => {
+    if (!partner) router.replace("/home")
+  }, [partner, router])
+
   const match = store.matchedPartner
   const isMatchWithPartner = match?.student.id === partnerId
 
   const location = isMatchWithPartner ? match.session.location : partner?.defaultLocation ?? "Robarts Library"
-  const course = store.activeSession?.subject ?? match?.session.course ?? (partner?.courses[0] ?? "CSC343")
+  const confirmedSession = store.sessions.find((s) => s.status === "confirmed" && s.matchedWith?.studentId === partnerId)
+  const course = confirmedSession?.subject ?? match?.session.course ?? (partner?.courses[0] ?? "CSC343")
   const studyStyleId = isMatchWithPartner ? match.session.studyStyle : "quiet-study"
   const studyStyleLabel = STUDY_STYLES.find((s) => s.id === studyStyleId)?.label ?? "Quiet study"
   const goal = isMatchWithPartner ? match.session.goal : "Prepare for midterm"
@@ -61,7 +67,7 @@ function ChatContent() {
 
   return (
     <div className="flex flex-col h-[780px]">
-      <TopBar title="Study chat" showBack backHref="/home" rightIcons="minimal" />
+      <TopBar title="Study chat" showBack backHref="/home" />
 
       {partner && (
         <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 border-b border-slate-200">
@@ -69,9 +75,7 @@ function ChatContent() {
             href={`/profile/${partner.id}`}
             className="flex items-center gap-3 flex-1 min-w-0 hover:bg-slate-100 rounded-lg p-1 -m-1 transition-colors"
           >
-            <div className="w-9 h-9 rounded-full bg-sky-100 flex items-center justify-center text-sm font-semibold text-sky-700 flex-shrink-0">
-              {partner.avatar}
-            </div>
+            <Avatar src={partner.avatar} size="sm" className="bg-sky-100 text-sky-700" />
             <div className="min-w-0 flex-1">
               <p className="font-medium text-slate-800 truncate">{partner.name}</p>
               <p className="text-xs text-slate-500 truncate">

@@ -2,6 +2,7 @@
 
 import { BadgeCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Avatar } from "./Avatar"
 
 interface ProfileInfoCardProps {
   name: string
@@ -25,9 +26,7 @@ export function ProfileInfoCard({
         className
       )}
     >
-      <div className="flex-shrink-0 w-14 h-14 rounded-full bg-slate-200 flex items-center justify-center text-lg font-semibold text-slate-600">
-        {avatar}
-      </div>
+      <Avatar src={avatar} size="2xl" className="bg-slate-200 text-slate-600" />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <span className="font-semibold text-slate-900">{name}</span>

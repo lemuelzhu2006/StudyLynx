@@ -29,7 +29,7 @@ export default function LocationsPage() {
 
   return (
     <div className="flex flex-col min-h-[780px]">
-      <TopBar title="Location" showBack backHref="/home" rightIcons="minimal" />
+      <TopBar title="Location" showBack backHref="/home" />
 
       <main className="flex-1 overflow-y-auto px-4 pb-8">
         <InputField

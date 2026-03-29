@@ -53,6 +53,12 @@ export function ChatComposer({
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault()
+              handleSend()
+            }
+          }}
           placeholder={placeholder}
           rows={2}
           className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"

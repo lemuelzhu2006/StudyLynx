@@ -1,12 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { useGoogleLogin } from "@react-oauth/google"
 import { InputField } from "@/components/InputField"
 import { Mail } from "lucide-react"
 import { useAppStore } from "@/context/AppStoreContext"
 import { authenticate, loadUsers } from "@/lib/auth"
 import { getStudentByName } from "@/lib/mock-data"
+
+const HAS_GOOGLE_CLIENT = !!(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID)
 
 export default function LoginPage() {
   const router = useRouter()
@@ -74,6 +77,7 @@ export default function LoginPage() {
             programType: mockStudent.programType,
             year: mockStudent.year,
             studentId: mockStudent.studentId,
+            weeklyAvailability: mockStudent.weeklyAvailability,
           }),
         })
         router.push("/home")
@@ -100,6 +104,7 @@ export default function LoginPage() {
         subject: mockStudent.subject,
         programType: mockStudent.programType,
         year: mockStudent.year,
+        weeklyAvailability: mockStudent.weeklyAvailability,
       }),
     })
     router.push("/home")
@@ -109,6 +114,53 @@ export default function LoginPage() {
     resetStore()
     router.replace("/login")
   }
+
+  const handleGoogleSuccess = useCallback(async (tokenResponse: { access_token: string }) => {
+    try {
+      const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+      })
+      if (!res.ok) throw new Error("Failed to fetch user info")
+      const profile = await res.json()
+      const gName: string = profile.name || profile.email?.split("@")[0] || "Google User"
+      const gEmail: string = profile.email || ""
+      const gPicture: string = profile.picture || ""
+
+      const mockStudent = getStudentByName(gName)
+      if (mockStudent) {
+        login({
+          name: gName,
+          email: gEmail,
+          avatar: gPicture || mockStudent.avatar,
+          profileComplete: true,
+          courses: mockStudent.courses.join(", "),
+          habits: mockStudent.habits ?? "",
+          defaultLocation: mockStudent.defaultLocation ?? "Robarts Library",
+          subject: mockStudent.subject,
+          programType: mockStudent.programType,
+          year: mockStudent.year,
+          studentId: mockStudent.studentId,
+          weeklyAvailability: mockStudent.weeklyAvailability,
+        })
+        router.push("/home")
+      } else {
+        login({
+          name: gName,
+          email: gEmail,
+          avatar: gPicture || gName.slice(0, 2).toUpperCase(),
+          profileComplete: false,
+        })
+        router.push("/profile?new=1")
+      }
+    } catch {
+      setError("Google sign-in failed. Please try again.")
+    }
+  }, [login, router])
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: () => setError("Google sign-in was cancelled or failed."),
+  })
 
   return (
     <div className="flex flex-col h-full px-6 py-8">
@@ -176,7 +228,7 @@ export default function LoginPage() {
         </button>
         <button
           type="button"
-          onClick={handleDemoLogin}
+          onClick={() => HAS_GOOGLE_CLIENT ? googleLogin() : handleDemoLogin()}
           className="w-full py-3 rounded-lg border border-slate-200 font-medium flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -185,13 +237,15 @@ export default function LoginPage() {
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
           </svg>
-          Sign in with Google (Demo)
+          {HAS_GOOGLE_CLIENT ? "Sign in with Google" : "Sign in with Google (Demo)"}
         </button>
         <button
           type="button"
-          className="w-full py-3 rounded-lg border border-slate-200 font-medium hover:bg-slate-50 transition-colors"
+          disabled
+          className="w-full py-3 rounded-lg border border-slate-200 font-medium transition-colors opacity-50 cursor-not-allowed"
+          title="University SSO is not available in the prototype"
         >
-          University SSO
+          University SSO (Coming soon)
         </button>
         <button
           type="button"

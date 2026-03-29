@@ -6,7 +6,7 @@ import { ErrorStateCard } from "@/components/ErrorStateCard"
 export default function ErrorPage() {
   return (
     <div className="flex flex-col min-h-[780px]">
-      <TopBar title="Error" showBack backHref="/home" rightIcons="minimal" />
+      <TopBar title="Error" showBack backHref="/home" />
 
       <main className="flex-1">
         <ErrorStateCard
