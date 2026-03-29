@@ -17,7 +17,7 @@ export function MobileFrame({ children, className }: MobileFrameProps) {
           className
         )}
       >
-        <div className="h-full overflow-y-auto overflow-x-hidden">{children}</div>
+        <div className="h-full overflow-y-auto overflow-x-hidden thin-scrollbar">{children}</div>
         <BottomNav />
       </div>
     </div>

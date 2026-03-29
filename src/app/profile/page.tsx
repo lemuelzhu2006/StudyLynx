@@ -8,9 +8,9 @@ import { TopBar } from "@/components/TopBar"
 import { ProfileInfoCard } from "@/components/ProfileInfoCard"
 import { InputField } from "@/components/InputField"
 import { DropdownField } from "@/components/DropdownField"
-import { BottomSheet } from "@/components/BottomSheet"
+import { MultiSelectDropdown } from "@/components/MultiSelectDropdown"
 import { WeeklyAvailabilityEditor } from "@/components/WeeklyAvailabilityEditor"
-import { SUBJECTS, PROGRAM_TYPES, ACADEMIC_LEVELS, YEARS } from "@/lib/mock-data"
+import { SUBJECTS, PROGRAM_TYPES, ACADEMIC_LEVELS, YEARS, COURSES } from "@/lib/mock-data"
 import { useAppStore } from "@/context/AppStoreContext"
 import { compressImageToBase64 } from "@/lib/image-utils"
 import { DEFAULT_WEEKLY, summarizeAvailability } from "@/lib/store-types"
@@ -32,9 +32,6 @@ function ProfileContent() {
   const [habits, setHabits] = useState(store.user.habits)
   const [bio, setBio] = useState(store.user.bio)
   const [defaultLocation, setDefaultLocation] = useState(store.user.defaultLocation)
-  const [showSubjectSheet, setShowSubjectSheet] = useState(false)
-  const [showProgramTypeSheet, setShowProgramTypeSheet] = useState(false)
-  const [showYearSheet, setShowYearSheet] = useState(false)
   const [saved, setSaved] = useState(false)
   const [showCredentials, setShowCredentials] = useState(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
@@ -168,16 +165,18 @@ function ProfileContent() {
             label={isNewUser ? "Subject *" : "Subject"}
             helperText="Your field of study (CS, Math, etc.)"
             value={subject}
+            onChange={setSubject}
+            options={[...SUBJECTS]}
             placeholder="Select subject"
-            onClick={() => setShowSubjectSheet(true)}
           />
 
           <DropdownField
             label={isNewUser ? "Program type *" : "Program type"}
             helperText="Specialist, Major, or Minor"
             value={programType}
+            onChange={setProgramType}
+            options={[...PROGRAM_TYPES]}
             placeholder="Select type"
-            onClick={() => setShowProgramTypeSheet(true)}
           />
 
           <div className="flex gap-4">
@@ -185,26 +184,29 @@ function ProfileContent() {
               <DropdownField
                 label="Level"
                 value={level}
+                onChange={setLevel}
+                options={[...ACADEMIC_LEVELS]}
                 placeholder="Select"
-                onClick={() => setShowYearSheet(true)}
               />
             </div>
             <div className="flex-1">
               <DropdownField
                 label={isNewUser ? "Year *" : "Year"}
                 value={String(year)}
+                onChange={(v) => setYear(Number(v))}
+                options={YEARS.map(String)}
                 placeholder="Select"
-                onClick={() => setShowYearSheet(true)}
               />
             </div>
           </div>
 
-          <InputField
+          <MultiSelectDropdown
             label={isNewUser ? "Courses *" : "Courses"}
             helperText="Courses you're currently taking"
-            value={courses}
-            onChange={setCourses}
-            placeholder="CSC343, CSC165"
+            value={courses ? courses.split(",").map((c) => c.trim()).filter(Boolean) : []}
+            onChange={(selected) => setCourses(selected.join(", "))}
+            options={[...COURSES]}
+            placeholder="Select courses"
           />
 
           <WeeklyAvailabilityEditor
@@ -288,89 +290,6 @@ function ProfileContent() {
         </button>
       </main>
 
-      <BottomSheet
-        isOpen={showSubjectSheet}
-        onClose={() => setShowSubjectSheet(false)}
-        title="Subject"
-      >
-        <ul className="p-4 space-y-1">
-          {SUBJECTS.map((p) => (
-            <li key={p}>
-              <button
-                type="button"
-                onClick={() => {
-                  setSubject(p)
-                  setShowSubjectSheet(false)
-                }}
-                className="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-50"
-              >
-                {p}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </BottomSheet>
-
-      <BottomSheet
-        isOpen={showProgramTypeSheet}
-        onClose={() => setShowProgramTypeSheet(false)}
-        title="Program type"
-      >
-        <ul className="p-4 space-y-1">
-          {PROGRAM_TYPES.map((p) => (
-            <li key={p}>
-              <button
-                type="button"
-                onClick={() => {
-                  setProgramType(p)
-                  setShowProgramTypeSheet(false)
-                }}
-                className="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-50"
-              >
-                {p}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </BottomSheet>
-
-      <BottomSheet
-        isOpen={showYearSheet}
-        onClose={() => setShowYearSheet(false)}
-        title="Academic level and year"
-      >
-        <div className="p-4">
-          <p className="text-sm font-medium text-slate-700 mb-2">Level</p>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {ACADEMIC_LEVELS.map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setLevel(l)}
-                className={`px-3 py-2 rounded-lg ${level === l ? "bg-sky-100 text-sky-800" : "bg-slate-100"}`}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
-          <p className="text-sm font-medium text-slate-700 mb-2">Year</p>
-          <div className="flex flex-wrap gap-2">
-            {YEARS.map((y) => (
-              <button
-                key={y}
-                type="button"
-                onClick={() => {
-                  setYear(y)
-                  setShowYearSheet(false)
-                }}
-                className={`px-3 py-2 rounded-lg ${year === y ? "bg-sky-100 text-sky-800" : "bg-slate-100"}`}
-              >
-                {y}
-              </button>
-            ))}
-          </div>
-        </div>
-      </BottomSheet>
     </div>
   )
 }

@@ -59,15 +59,15 @@ export function BottomNav() {
               key={tab.key}
               href={tab.href}
               className={cn(
-                "flex flex-col items-center gap-0.5 rounded-2xl px-3 py-1.5 min-w-0 transition-all",
+                "flex flex-col items-center gap-0.5 rounded-2xl px-3 py-1.5 min-w-[56px] transition-all",
                 active ? "text-sky-600" : "text-slate-400 hover:text-slate-700"
               )}
             >
               <Icon className={cn("h-6 w-6", active && "text-sky-600")} />
               <span
                 className={cn(
-                  "text-[10px] font-semibold transition-all overflow-hidden",
-                  active ? "max-h-4 opacity-100" : "max-h-0 opacity-0"
+                  "text-[10px] font-semibold transition-all",
+                  active ? "text-sky-600" : "text-slate-400"
                 )}
               >
                 {tab.label}

@@ -31,11 +31,13 @@ const defaultStore: AppStore = {
   shareLiveLocation: false,
   sessions: [],
   matchedPartner: null,
+  matchedPartners: [],
   savedPartners: [],
   chatMessages: {},
 }
 
 type MatchedPartnerPayload = { student: import("@/lib/mock-data").Student; session: import("@/lib/mock-data").Session } | null
+type MatchedPartnersPayload = { student: import("@/lib/mock-data").Student; session: import("@/lib/mock-data").Session }[]
 
 const AppStoreContext = createContext<{
   store: AppStore
@@ -50,6 +52,7 @@ const AppStoreContext = createContext<{
   removeSession: (id: string) => void
   getSessionById: (id: string) => UserSession | undefined
   setMatchedPartner: (partner: MatchedPartnerPayload) => void
+  setMatchedPartners: (partners: MatchedPartnersPayload) => void
   addSavedPartner: (partner: SavedPartner) => void
   removeSavedPartner: (id: string) => void
   isPartnerSaved: (id: string) => boolean
@@ -183,6 +186,10 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     setStore((s) => ({ ...s, matchedPartner: partner }))
   }, [])
 
+  const setMatchedPartners = useCallback((partners: MatchedPartnersPayload) => {
+    setStore((s) => ({ ...s, matchedPartners: partners }))
+  }, [])
+
   const addSavedPartner = useCallback((partner: SavedPartner) => {
     setStore((s) => {
       if (s.savedPartners.some((p) => p.id === partner.id)) return s
@@ -229,6 +236,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     removeSession,
     getSessionById,
     setMatchedPartner,
+    setMatchedPartners,
     addSavedPartner,
     removeSavedPartner,
     isPartnerSaved,

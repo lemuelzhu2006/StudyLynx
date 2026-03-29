@@ -10,7 +10,7 @@ import { useAppStore } from "@/context/AppStoreContext"
 function MatchingContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { store, setMatchedPartner, updateSessionStatus, getSessionById } = useAppStore()
+  const { store, setMatchedPartner, setMatchedPartners, updateSessionStatus, getSessionById } = useAppStore()
   const sessionId = searchParams.get("sessionId") || searchParams.get("from")
 
   useEffect(() => {
@@ -43,26 +43,21 @@ function MatchingContent() {
         return
       }
 
-      const matches = getMatchingSessions(course, location, studyStyle, goal, date)
-      const picked = matches[0]
-      if (picked) {
+      let matches = getMatchingSessions(course, location, studyStyle, goal, date)
+      if (matches.length === 0) {
+        matches = getMatchingSessions(course, location, studyStyle, goal)
+      }
+      if (matches.length > 0) {
+        const top3 = matches.slice(0, 3)
+        const picked = top3[0]
         setMatchedPartner({ student: picked.student, session: picked })
+        setMatchedPartners(top3.map((m) => ({ student: m.student, session: m })))
         if (sessionId) {
           updateSessionStatus(sessionId, "matched", { studentId: picked.student.id, sessionId: picked.id })
         }
         router.replace(`/match-found?sessionId=${sessionId}`)
       } else {
-        const allDateMatches = getMatchingSessions(course, location, studyStyle, goal)
-        const fallback = allDateMatches[0]
-        if (fallback) {
-          setMatchedPartner({ student: fallback.student, session: fallback })
-          if (sessionId) {
-            updateSessionStatus(sessionId, "matched", { studentId: fallback.student.id, sessionId: fallback.id })
-          }
-          router.replace(`/match-found?sessionId=${sessionId}`)
-        } else {
-          router.replace("/home?no-match=1")
-        }
+        router.replace("/home?no-match=1")
       }
     }
 

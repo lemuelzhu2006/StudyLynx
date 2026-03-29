@@ -1,31 +1,39 @@
 "use client"
 
 import { Suspense, useState, useEffect } from "react"
-import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { TopBar } from "@/components/TopBar"
 import { useAppStore } from "@/context/AppStoreContext"
 import { ProfileInfoCard } from "@/components/ProfileInfoCard"
 import { SessionCardExpanded } from "@/components/SessionCardExpanded"
-import { STUDY_STYLES } from "@/lib/mock-data"
+import { Avatar } from "@/components/Avatar"
+import { STUDY_STYLES, formatSessionDate } from "@/lib/mock-data"
+import { BadgeCheck } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 function MatchFoundContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { store, addSavedPartner, isPartnerSaved, setMatchedPartner, updateSessionStatus, getSessionById, addSession } = useAppStore()
   const [saved, setSaved] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
   const sessionId = searchParams.get("sessionId")
   const userSession = sessionId ? getSessionById(sessionId) : null
+  const matches = store.matchedPartners ?? []
   const match = store.matchedPartner
 
   useEffect(() => {
-    if (!match) router.replace("/home")
-  }, [match, router])
+    if (!match && matches.length === 0) router.replace("/home")
+  }, [match, matches, router])
 
-  if (!match) return null
+  if (!match && matches.length === 0) return null
 
-  const { student, session } = match
+  const allMatches = matches.length > 0 ? matches : (match ? [match] : [])
+  const selected = allMatches[selectedIndex] ?? allMatches[0]
+  if (!selected) return null
+
+  const { student, session } = selected
   const isSaved = saved || isPartnerSaved(student.id)
   const programDisplay = `${student.subject} ${student.programType}`
 
@@ -35,6 +43,7 @@ function MatchFoundContent() {
   }
 
   const handleAccept = () => {
+    setMatchedPartner(selected)
     if (sessionId && userSession) {
       updateSessionStatus(sessionId, "confirmed")
     } else {
@@ -65,6 +74,59 @@ function MatchFoundContent() {
       <TopBar title="Match Found" showBack backHref="/home" />
 
       <main className="flex-1 overflow-y-auto px-4 pb-8">
+        {allMatches.length > 1 && (
+          <div className="mt-4">
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+              Top {allMatches.length} Matches
+            </h3>
+            <div className="space-y-2">
+              {allMatches.map((m, i) => (
+                <button
+                  key={m.session.id}
+                  type="button"
+                  onClick={() => { setSelectedIndex(i); setSaved(false) }}
+                  className={cn(
+                    "w-full text-left p-3 rounded-xl border transition-all",
+                    i === selectedIndex
+                      ? "border-sky-300 bg-sky-50 ring-2 ring-sky-200/60 shadow-sm"
+                      : "border-slate-200 bg-white hover:bg-slate-50"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <Avatar src={m.student.avatar} size="md" className={cn(
+                      "flex-shrink-0",
+                      i === selectedIndex ? "ring-2 ring-sky-300" : ""
+                    )} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className={cn(
+                          "font-medium truncate text-sm",
+                          i === selectedIndex ? "text-sky-900" : "text-slate-800"
+                        )}>
+                          {m.student.name}
+                        </span>
+                        {m.student.verified && (
+                          <BadgeCheck className="h-3.5 w-3.5 text-sky-500 flex-shrink-0" />
+                        )}
+                        <span className={cn(
+                          "ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0",
+                          i === 0 ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-500"
+                        )}>
+                          #{i + 1}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 truncate mt-0.5">
+                        {m.session.location} · {m.session.course}
+                        {m.session.date && <> · {formatSessionDate(m.session.date)}</>}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <ProfileInfoCard
           name={student.name}
           avatar={student.avatar}

@@ -33,12 +33,22 @@ export default function LocationsPage() {
 
       <main className="flex-1 overflow-y-auto px-4 pb-8">
         <InputField
-          placeholder="Search for a location..."
+          placeholder="Search or type a custom location..."
           value={search}
           onChange={setSearch}
           icon={Search}
           className="mt-4"
         />
+
+        {search.trim() && !LOCATIONS.some((l) => l.toLowerCase() === search.toLowerCase()) && (
+          <button
+            type="button"
+            onClick={() => handleSelectLocation(search.trim())}
+            className="mt-2 w-full text-left px-4 py-3 rounded-xl bg-sky-50 border border-sky-100 hover:bg-sky-100 transition-colors text-sm text-sky-700 font-medium"
+          >
+            Use &quot;{search.trim()}&quot; as location
+          </button>
+        )}
 
         <div className="mt-6">
           <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wide">

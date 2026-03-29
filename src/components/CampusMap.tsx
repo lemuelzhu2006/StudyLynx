@@ -165,7 +165,7 @@ export function CampusMap({ className, height = "140px", sessions = [] }: Campus
   return (
     <div
       ref={containerRef}
-      className={cn("rounded-xl overflow-hidden border border-slate-200 bg-slate-100", className)}
+      className={cn("rounded-xl overflow-hidden border border-slate-200 bg-slate-100 relative z-0", className)}
       style={{ height }}
     />
   )

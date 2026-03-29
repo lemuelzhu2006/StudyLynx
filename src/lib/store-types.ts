@@ -73,6 +73,7 @@ export interface AppStore {
   shareLiveLocation: boolean
   sessions: UserSession[]
   matchedPartner: { student: Student; session: Session } | null
+  matchedPartners?: { student: Student; session: Session }[]
   savedPartners: SavedPartner[]
   chatMessages: Record<string, ChatMessage[]>
 }

@@ -80,7 +80,7 @@ export default function NewSessionPage() {
     <div className="flex flex-col min-h-[780px]">
       <TopBar title="Create a New Session" showBack backHref="/home" />
 
-      <main className="flex-1 overflow-y-auto px-4 pb-32">
+      <main className="flex-1 px-4 pb-32">
         <div className="space-y-5 mt-4">
           <div>
             <InputField

@@ -75,7 +75,7 @@ export function SearchableDropdown({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto thin-scrollbar">
           {filteredOptions.length > 0 ? (
             <ul className="p-1">
               {filteredOptions.map((opt) => (
