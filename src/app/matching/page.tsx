@@ -10,7 +10,7 @@ import { useAppStore } from "@/context/AppStoreContext"
 function MatchingContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { store, setMatchedPartner, setMatchedPartners, updateSessionStatus, getSessionById } = useAppStore()
+  const { setMatchedPartner, setMatchedPartners, updateSessionStatus, getSessionById } = useAppStore()
   const sessionId = searchParams.get("sessionId") || searchParams.get("from")
 
   useEffect(() => {
@@ -43,12 +43,12 @@ function MatchingContent() {
         return
       }
 
-      let matches = getMatchingSessions(course, location, studyStyle, goal, date)
-      if (matches.length === 0) {
-        matches = getMatchingSessions(course, location, studyStyle, goal)
-      }
-      if (matches.length > 0) {
-        const top3 = matches.slice(0, 3)
+      const matches = getMatchingSessions(course, location, studyStyle, goal)
+      const effectiveMatches = date
+        ? matches.map((match) => ({ ...match, date }))
+        : matches
+      if (effectiveMatches.length > 0) {
+        const top3 = effectiveMatches.slice(0, 3)
         const picked = top3[0]
         setMatchedPartner({ student: picked.student, session: picked })
         setMatchedPartners(top3.map((m) => ({ student: m.student, session: m })))
@@ -63,7 +63,7 @@ function MatchingContent() {
 
     const t = setTimeout(runMatching, 1500)
     return () => clearTimeout(t)
-  }, [sessionId, router, setMatchedPartner, updateSessionStatus, getSessionById])
+  }, [sessionId, router, setMatchedPartner, setMatchedPartners, updateSessionStatus, getSessionById])
 
   return (
     <div className="flex flex-col min-h-[780px]">

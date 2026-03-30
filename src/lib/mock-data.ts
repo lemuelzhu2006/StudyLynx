@@ -437,7 +437,6 @@ export function getMatchingSessions(
   location: string,
   studyStyle: string,
   goal: string,
-  _date?: string
 ): Session[] {
   const normalizedCourse = course.trim().toUpperCase()
   if (!normalizedCourse) return []
