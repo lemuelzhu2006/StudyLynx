@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { useGoogleLogin } from "@react-oauth/google"
 import { InputField } from "@/components/InputField"
 import { Mail } from "lucide-react"
 import { useAppStore } from "@/context/AppStoreContext"
@@ -13,8 +14,6 @@ function GoogleSignInButtonInner({ onSuccess, onError }: {
   onSuccess: (tokenResponse: { access_token: string }) => void
   onError: () => void
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports -- conditionally loaded only when GoogleOAuthProvider is present
-  const { useGoogleLogin } = require("@react-oauth/google") as typeof import("@react-oauth/google")
   const googleLogin = useGoogleLogin({ onSuccess, onError })
 
   return (
